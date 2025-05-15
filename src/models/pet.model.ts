@@ -1,9 +1,5 @@
 import mongoose from "mongoose";
-
-export interface PetType {
-    name: string;
-    animal: string;
-}
+import { PetType } from "../types";
 
 const petCollection = "pets";
 

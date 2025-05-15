@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import bcrypt from "bcrypt";
-import { PetType } from "../models/pet.model";
-import { UserType } from "../models/user.model";
+import { PetType } from "../types";
+import { UserType } from "../types";
 
 export const generateMockUsers = async (count: number) => {
     const users = [] as UserType[];
