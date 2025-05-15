@@ -1,5 +1,9 @@
 import { Router } from "express";
-import { generateMockUsers } from "../utils/mocking.utils";
+import { generateMockPets, generateMockUsers } from "../utils/mocking.utils";
+import User from "../models/user.model";
+import Pet from "../models/pet.model";
+import { PetType } from "../types";
+import { UserType } from "../types";
 
 const router = Router();
 
@@ -12,16 +16,35 @@ router.get("/mockingusers", async (req, res) => {
     }
 });
 
-router.get("/mockingpets", (req, res) => {});
+router.get("/mockingpets", async (req, res) => {
+    try {
+        const mockPets = await generateMockPets(50);
+        res.json(mockPets);
+    } catch (error) {
+        res.status(500).json({ error: "error generating pets" });
+    }
+});
 
 router.post("/generateData", async (req, res) => {
     const { users = 0, pets = 0 } = req.body;
-
+    const data = {
+        insertedPets: [] as PetType[],
+        insertedUsers: [] as UserType[],
+    };
     try {
         const generatedUsers = await generateMockUsers(users);
-        await UserModel.insertMany(generatedUsers);
+        await User.insertMany(generatedUsers);
 
-        res.status(201).json({ message: "Mock data inserted successfully" });
+        const generatedPets = await generateMockPets(pets);
+        await Pet.insertMany(generatedPets);
+
+        data.insertedPets = generatedPets;
+        data.insertedUsers = generatedUsers;
+
+        res.status(201).json({
+            message: "Mock data inserted successfully",
+            data: data,
+        });
     } catch (error) {
         res.status(500).json({ error: "Error generating mock data" });
     }
